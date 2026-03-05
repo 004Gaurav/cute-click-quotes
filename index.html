@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cute Quote Click Screen</title>
+  <style>
+    :root {
+      --bg-1: #ffe3f1;
+      --bg-2: #e9f6ff;
+      --bg-3: #fff7d9;
+      --ink: #53203f;
+      --quote: #b03378;
+      --heart: #ff5fa2;
+      --sparkle: #ffd86b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      overflow: hidden;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #000;
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .bg-blur {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(200px 200px at 20% 15%, rgba(255, 255, 255, 0.45), transparent 70%),
+        radial-gradient(220px 220px at 80% 25%, rgba(255, 201, 231, 0.35), transparent 70%),
+        radial-gradient(260px 260px at 30% 85%, rgba(194, 237, 255, 0.35), transparent 70%);
+      filter: blur(18px);
+    }
+
+
+    .quote {
+      position: fixed;
+      pointer-events: none;
+      color: var(--quote);
+      font-size: clamp(1rem, 1.9vw, 1.3rem);
+      font-weight: 700;
+      text-shadow: 0 2px 12px rgba(255, 255, 255, 0.7);
+      white-space: nowrap;
+      z-index: 8;
+      transform: translate(-50%, -50%) scale(0.75);
+      opacity: 0;
+      animation: quote-pop 5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    }
+
+    .heart {
+      position: fixed;
+      pointer-events: none;
+      color: var(--heart);
+      font-size: clamp(16px, 2.2vw, 24px);
+      transform: translate(-50%, -50%) scale(0.8);
+      opacity: 0;
+      z-index: 6;
+      animation: heart-float var(--t, 1800ms) ease-out forwards;
+    }
+
+    .sparkle {
+      position: fixed;
+      pointer-events: none;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fffbe0, var(--sparkle));
+      box-shadow: 0 0 12px rgba(255, 218, 139, 0.75);
+      transform: translate(-50%, -50%) scale(0.5);
+      opacity: 0;
+      z-index: 7;
+      animation: sparkle-burst var(--t, 900ms) ease-out forwards;
+    }
+
+    @keyframes quote-pop {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -45%) scale(0.75);
+      }
+      12% {
+        opacity: 1;
+      }
+      72% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -170%) scale(1.04);
+      }
+    }
+
+    @keyframes heart-float {
+      0% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--dx0, 0px)), calc(-50% + var(--dy0, 0px))) scale(0.4);
+      }
+      18% {
+        opacity: 0.95;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--dx1, 0px)), calc(-50% + var(--dy1, -80px))) scale(1.15);
+      }
+    }
+
+    @keyframes sparkle-burst {
+      0% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--sx0, 0px)), calc(-50% + var(--sy0, 0px))) scale(0.2);
+      }
+      20% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--sx1, 0px)), calc(-50% + var(--sy1, 0px))) scale(1.1);
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <script>
+    const DEFAULT_TEMPLATES = [
+      "{name} is cute \uD83D\uDE0A",
+      "Hey {name} \uD83D\uDC95",
+      "Stay adorable {name} \uD83E\uDD70",
+      "{name}, you make the world brighter \u2728",
+      "{name} deserves all the smiles \uD83D\uDC96",
+      "Someone precious is here... hi {name} \uD83D\uDC40",
+      "{name} = max cuteness detected \uD83D\uDE04",
+      "{name}, you are a whole vibe \uD83C\uDF38",
+      "Smile check for {name} \uD83D\uDE0D",
+      "{name}, keep glowing \uD83C\uDF1F",
+      "You are magic, {name} \uD83E\uDE84",
+      "Hi {name}, cuteness activated \uD83D\uDCAB",
+      "{name}, your laugh is my favorite sound \uD83C\uDFB6",
+      "Everything feels better with {name} around \uD83E\uDD79",
+      "{name}, you are lovely today and always \uD83C\uDF80",
+      "Tiny reminder: {name} is amazing \uD83D\uDC9D",
+      "{name}, you are sweeter than candy \uD83C\uDF6C",
+      "Sending extra sparkles to {name} \u2728",
+      "{name}, be proud of your beautiful heart \uD83D\uDC97",
+      "Hello cutie {name} \uD83D\uDC40",
+      "{name}, you make ordinary days special \uD83C\uDF08",
+      "Forever rooting for you, {name} \uD83E\uDD70",
+      "{name}, your energy is pure sunshine \u2600\uFE0F",
+      "You + smile = perfect, {name} \uD83D\uDE0A",
+      "{name}, stay soft and strong \uD83D\uDC95",
+      "All hearts for {name} \uD83D\uDC9E",
+      "{name}, you are the cutest headline today \uD83D\uDCF0"
+    ];
+
+    const DISPLAY_NAME = "Anmol";
+
+    const state = {
+      name: DISPLAY_NAME,
+      templates: DEFAULT_TEMPLATES.slice(),
+      audioContext: null
+    };
+
+    async function loadTemplates() {
+      try {
+        const res = await fetch("./quotes.json", { cache: "no-store" });
+        if (!res.ok) {
+          return;
+        }
+        const data = await res.json();
+        if (Array.isArray(data) && data.every((item) => typeof item === "string")) {
+          state.templates = data;
+        }
+      } catch (err) {
+        /* Keep fallback templates when file fetch is unavailable (e.g. file://). */
+      }
+    }
+
+    function randomFrom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function resolveQuote(template) {
+      return template.replace(/\{name\}/g, state.name);
+    }
+
+    function createQuote(x, y) {
+      const quote = document.createElement("div");
+      quote.className = "quote";
+      quote.textContent = resolveQuote(randomFrom(state.templates));
+      quote.style.left = x + "px";
+      quote.style.top = y + "px";
+      document.body.appendChild(quote);
+      setTimeout(() => quote.remove(), 5000);
+    }
+
+    function createHearts(x, y) {
+      const symbols = ["\u2665", "\uD83D\uDC95", "\uD83D\uDC97", "\uD83D\uDC9E"];
+      const count = 6;
+      for (let i = 0; i < count; i += 1) {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.textContent = randomFrom(symbols);
+        heart.style.left = x + "px";
+        heart.style.top = y + "px";
+        heart.style.setProperty("--dx0", (Math.random() * 22 - 11).toFixed(1) + "px");
+        heart.style.setProperty("--dy0", (Math.random() * 12 - 6).toFixed(1) + "px");
+        heart.style.setProperty("--dx1", (Math.random() * 120 - 60).toFixed(1) + "px");
+        heart.style.setProperty("--dy1", (-70 - Math.random() * 120).toFixed(1) + "px");
+        heart.style.setProperty("--t", (1200 + Math.random() * 1400).toFixed(0) + "ms");
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 2800);
+      }
+    }
+
+    function createSparkles(x, y) {
+      const count = 16;
+      for (let i = 0; i < count; i += 1) {
+        const sparkle = document.createElement("div");
+        sparkle.className = "sparkle";
+        sparkle.style.left = x + "px";
+        sparkle.style.top = y + "px";
+
+        const angle = (Math.PI * 2 * i) / count;
+        const radius = 35 + Math.random() * 48;
+        const endX = Math.cos(angle) * radius;
+        const endY = Math.sin(angle) * radius;
+
+        sparkle.style.setProperty("--sx0", (Math.random() * 8 - 4).toFixed(1) + "px");
+        sparkle.style.setProperty("--sy0", (Math.random() * 8 - 4).toFixed(1) + "px");
+        sparkle.style.setProperty("--sx1", endX.toFixed(1) + "px");
+        sparkle.style.setProperty("--sy1", endY.toFixed(1) + "px");
+        sparkle.style.setProperty("--t", (700 + Math.random() * 450).toFixed(0) + "ms");
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 1300);
+      }
+    }
+
+    function initAudioContext() {
+      if (!state.audioContext) {
+        state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return state.audioContext;
+    }
+
+    function playCuteChime() {
+      const ctx = initAudioContext();
+      if (!ctx) {
+        return;
+      }
+      const now = ctx.currentTime;
+      const notes = [659.25, 783.99, 1046.5];
+      for (let i = 0; i < notes.length; i += 1) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(notes[i], now + i * 0.07);
+        gain.gain.setValueAtTime(0.0001, now + i * 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.06, now + i * 0.07 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.07 + 0.23);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + i * 0.07);
+        osc.stop(now + i * 0.07 + 0.26);
+      }
+    }
+
+    function spawnAt(x, y) {
+      createQuote(x, y);
+      createHearts(x, y);
+      createSparkles(x, y);
+      playCuteChime();
+    }
+
+    document.addEventListener("pointerdown", (event) => {
+      spawnAt(event.clientX, event.clientY);
+    }, { passive: true });
+
+    loadTemplates();
+  </script>
+</body>
+</html>
